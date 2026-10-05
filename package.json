@@ -1,0 +1,18 @@
+{
+  "name": "easy-sinfony-auth-api",
+  "version": "1.0.0",
+  "description": "Servicio web (API REST) de autenticacion - registro e inicio de sesion - para Easy Sinfony. SENA GA7-220501096-AA5-EV01.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "author": "Juan Sebastian Jimenez Satizabal",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}
