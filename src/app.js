@@ -2,9 +2,15 @@
 // Configuracion de la aplicacion Express (middlewares y rutas).
 // ---------------------------------------------------------------------
 const express = require('express');
+
+const cursosRoutes = require('./routes/cursos.routes');
+
 const authRoutes = require('./routes/auth.routes');
 
 const app = express();
+
+const cors = require('cors');
+app.use(cors());
 
 // Permite leer el cuerpo de las peticiones en formato JSON
 app.use(express.json());
@@ -24,6 +30,8 @@ app.get('/', (req, res) => {
 
 // Todas las rutas de autenticacion quedan bajo /api/auth
 app.use('/api/auth', authRoutes);
+
+app.use('/api', cursosRoutes);
 
 // Ruta no encontrada
 app.use((req, res) => {

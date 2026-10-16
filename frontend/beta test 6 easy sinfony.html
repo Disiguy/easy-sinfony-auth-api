@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#212121">
+<title>Easy Sinfony — Prototipo front-end</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================
+   Easy Sinfony — prototipo front-end (beta)
+   Paleta institucional del proyecto: ámbar + negro
+   ========================================================== */
+
+:root{
+  --dark:#212121;
+  --amber:#FFC120;
+  --amber-strong:#e6ac00;
+  --orange:#ff8a3d;
+  --cream:#fff8e8;
+  --cream-tint:#fbecc3;
+  --paper:#ffffff;
+  --muted:#7a6f5d;
+  --muted-on-dark:#cabfa8;
+  --line:#e6dbc0;
+  --page-bg:#15130f;
+
+  --radius-lg:28px;
+  --radius-md:16px;
+  --radius-sm:10px;
+
+  --font-display:'Fredoka', system-ui, sans-serif;
+  --font-body:'Work Sans', system-ui, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  font-family:var(--font-body);
+  background:var(--page-bg);
+  color:var(--dark);
+  min-height:100vh;
+}
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+input{ font-family:inherit; }
+ul{ list-style:none; }
+h1,h2,h3{ font-family:var(--font-display); font-weight:600; line-height:1.15; color:var(--dark); }
+:focus-visible{ outline:2px solid var(--amber); outline-offset:2px; }
+
+/* ---------- Contenedor de la app ---------- */
+.app-shell{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  background:var(--cream);
+  overflow:hidden;
+}
+
+/* ---------- Pantallas ---------- */
+.screen{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  background:var(--cream);
+  overflow-y:auto;
+  transform:translateX(100%);
+  opacity:0;
+  visibility:hidden;
+  transition:transform .38s cubic-bezier(.4,0,.2,1), opacity .28s ease;
+  -webkit-overflow-scrolling:touch;
+}
+.screen.active{ transform:translateX(0); opacity:1; visibility:visible; }
+.screen::-webkit-scrollbar{ width:0; height:0; }
+.screen > *{ flex-shrink:0; }
+
+/* ---------- Botones ---------- */
+.btn{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:14px;
+  border-radius:999px;
+  padding:10px 18px;
+  transition:transform .15s ease, background .15s ease;
+}
+.btn:active{ transform:scale(.96); }
+.btn--lg{ padding:13px 22px; font-size:15px; }
+.btn--block{ width:100%; display:block; text-align:center; }
+.btn--amber{ background:var(--amber); color:var(--dark); }
+.btn--amber:hover{ background:var(--amber-strong); }
+.btn--dark{ background:var(--dark); color:var(--amber); }
+.btn--dark:hover{ background:#2c2c2c; }
+
+/* ---------- Barra superior (Inicio) ---------- */
+.topbar{
+  position:sticky; top:0; z-index:5;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:8px;
+  padding:34px 18px 14px;
+  background:var(--dark);
+}
+.brand{ display:flex; align-items:center; gap:7px; min-width:0; }
+.brand__mark{ flex:none; width:22px; height:19px; color:var(--amber); }
+.brand__word{ font-family:var(--font-display); font-weight:600; font-size:15.5px; color:var(--amber); white-space:nowrap; }
+.brand__tag{
+  flex:none;
+  font-family:var(--font-mono); font-size:10px; color:var(--muted-on-dark);
+  border:1px solid #4a4436; padding:2px 6px; border-radius:999px;
+}
+.topbar .btn{ flex:none; padding:9px 15px; font-size:13.5px; white-space:nowrap; }
+
+/* ---------- Hero ---------- */
+.hero{
+  background:linear-gradient(160deg, var(--dark) 0%, #2c2418 100%);
+  padding:36px 0 0;
+}
+.hero__content{
+  display:flex; flex-direction:column; gap:14px;
+  max-width:290px;
+  padding:0 22px 28px;
+}
+.hero__title{ font-size:26px; color:var(--cream); }
+.hero__subtitle{ font-size:14.5px; color:var(--muted-on-dark); line-height:1.55; }
+.hero .btn{ align-self:flex-start; margin-top:4px; }
+.hero__staff{ display:block; width:100%; height:34px; }
+
+/* ---------- Secciones ---------- */
+.section{ padding:30px 22px; }
+.section h2{ font-size:19px; margin-bottom:16px; }
+.section--features{ background:var(--cream-tint); }
+
+/* Cursos */
+.course-list{ display:flex; flex-direction:column; gap:12px; }
+.course-card{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px;
+  background:var(--paper);
+  border-radius:var(--radius-md);
+  border-left:4px solid var(--amber);
+  box-shadow:0 6px 16px -10px rgba(33,33,33,.3);
+}
+.course-card__icon{ flex:none; width:40px; height:40px; font-size:30px; line-height:40px; text-align:center; }
+.course-card h3{ font-size:15px; margin-bottom:2px; }
+.course-card p{ font-size:12.5px; color:var(--muted); line-height:1.4; }
+
+/* Por qué Easy Sinfony */
+.feature-list{ display:flex; flex-direction:column; gap:16px; }
+.feature-list li{ display:flex; gap:12px; align-items:flex-start; }
+.feature-list .check{
+  flex:none; width:26px; height:26px; border-radius:50%;
+  background:var(--amber); color:var(--dark);
+  display:flex; align-items:center; justify-content:center;
+}
+.feature-list .check svg{ width:14px; height:14px; }
+.feature-list strong{ display:block; font-family:var(--font-display); font-size:14.5px; margin-bottom:2px; }
+.feature-list p{ font-size:12.5px; color:var(--muted); line-height:1.4; }
+
+/* Pie */
+.app-footer{ margin-top:auto; padding:22px; text-align:center; }
+.app-footer p{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+
+/* ---------- Pantallas de autenticación ---------- */
+.auth-card{ display:contents; }
+.authbar{
+  flex-shrink:0;
+  display:flex; align-items:center; gap:10px;
+  padding:34px 16px 10px;
+  background:var(--cream);
+}
+.authbar h1{ flex:1; text-align:center; font-size:17px; }
+.authbar__spacer{ width:34px; flex:none; }
+.icon-btn{
+  flex:none; width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; color:var(--dark);
+}
+.icon-btn:hover{ background:rgba(0,0,0,.06); }
+.icon-btn svg{ width:20px; height:20px; }
+
+.auth-body{
+  flex:1;
+  flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:16px 26px 60px;
+  gap:16px;
+  text-align:center;
+}
+.auth-mark{
+  width:54px; height:54px; border-radius:18px;
+  background:var(--dark);
+  display:flex; align-items:center; justify-content:center;
+}
+.auth-mark svg{ width:26px; height:23px; color:var(--amber); }
+.auth-lead{ font-size:14px; color:var(--muted); max-width:230px; line-height:1.5; }
+
+.auth-form{ width:100%; display:flex; flex-direction:column; gap:14px; text-align:left; margin-top:2px; }
+.field{ display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; }
+.field input{
+  font-family:var(--font-body); font-size:14.5px; font-weight:400;
+  padding:13px 14px;
+  border-radius:var(--radius-sm);
+  border:1.5px solid var(--line);
+  background:var(--paper);
+  color:var(--dark);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.field input::placeholder{ color:#b7ac93; }
+.field input:focus{
+  outline:none;
+  border-color:var(--amber);
+  box-shadow:0 0 0 3px rgba(255,193,32,.25);
+}
+
+.auth-switch{ font-size:13.5px; color:var(--muted); }
+.auth-switch a{
+  color:var(--dark); font-weight:600;
+  text-decoration:underline;
+  text-decoration-color:var(--amber);
+  text-underline-offset:3px;
+}
+.auth-switch a:hover{ color:var(--amber-strong); }
+
+/* ---------- Aviso emergente ---------- */
+.toast{
+  position:absolute; left:50%; bottom:26px;
+  transform:translate(-50%,12px);
+  background:var(--dark); color:var(--amber);
+  font-family:var(--font-display); font-weight:600; font-size:13.5px;
+  padding:12px 20px; border-radius:999px;
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:30;
+  width:max-content; max-width:calc(100% - 40px);
+  text-align:center; line-height:1.35;
+}
+.toast--visible{ opacity:1; transform:translate(-50%,0); }
+.toast--error{ background:#b3261e; color:#fff; }
+
+/* Botón deshabilitado mientras se espera la respuesta de la API */
+.btn:disabled{ opacity:.6; cursor:wait; }
+
+/* ---------- Elegir instrumento ---------- */
+.instrument-grid{ width:100%; display:flex; flex-direction:column; gap:12px; }
+.instrument-option{
+  display:flex; align-items:center; gap:14px; width:100%;
+  padding:16px; text-align:left;
+  background:var(--paper); border:2px solid var(--line);
+  border-radius:var(--radius-md);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.instrument-emoji{ flex:none; width:40px; font-size:32px; line-height:40px; text-align:center; }
+.instrument-option h3{ font-size:16px; margin-bottom:2px; }
+.instrument-option p{ font-size:12.5px; color:var(--muted); line-height:1.4; }
+.instrument-option[aria-pressed="true"]{
+  border-color:var(--amber); box-shadow:0 0 0 3px rgba(255,193,32,.3);
+}
+
+/* ---------- Pantalla de módulos (tras iniciar sesión) ---------- */
+.screen--modulos{ background:var(--amber); }
+.mod-wrap{ flex:1; display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; padding:30px 0 26px; }
+.mod-top{ display:flex; align-items:center; gap:14px; padding:6px 18px 0; }
+.mod-top h1{ font-size:20px; }
+.mod-top p{ font-size:13px; color:#5c4300; font-weight:600; }
+.menu-btn{ flex:none; width:46px; height:46px; border-radius:14px; background:var(--dark); color:var(--amber); display:flex; align-items:center; justify-content:center; }
+.menu-btn svg{ width:24px; height:24px; }
+
+.slider{
+  flex:1; display:flex; align-items:center; gap:16px;
+  overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+  padding:22px max(11vw, calc(50% - 260px));
+  cursor:grab; -webkit-overflow-scrolling:touch;
+}
+.slider::-webkit-scrollbar{ display:none; }
+.slider.dragging{ scroll-snap-type:none; cursor:grabbing; user-select:none; }
+.mod-card{
+  flex:none; width:min(78vw,520px); height:min(60vh,430px);
+  scroll-snap-align:center;
+  display:flex; flex-direction:column; gap:8px; text-align:left;
+  padding:26px; border-radius:var(--radius-lg);
+  background:var(--dark); color:var(--cream);
+  box-shadow:0 18px 30px -18px rgba(0,0,0,.6);
+  opacity:.55; transform:scale(.94);
+  transition:opacity .25s ease, transform .25s ease;
+}
+.mod-card.is-active{ opacity:1; transform:none; }
+.mod-card__count{ font-family:var(--font-mono); font-size:12px; color:var(--amber); }
+.mod-card h2{ font-size:32px; color:var(--cream); }
+.mod-card p{ font-size:14.5px; line-height:1.5; color:var(--muted-on-dark); }
+.mod-card__status{ margin-top:auto; align-self:flex-end; font-family:var(--font-display); font-weight:600; font-size:15px; color:var(--amber); }
+.mod-card__status.done{ font-size:24px; color:var(--cream); }
+.mod-card__status.skipped{ color:var(--muted-on-dark); }
+
+.mod-nav{ display:flex; justify-content:center; gap:14px; }
+.nav-btn{ width:44px; height:44px; border-radius:50%; background:var(--dark); color:var(--amber); display:flex; align-items:center; justify-content:center; }
+.nav-btn svg{ width:20px; height:20px; }
+
+/* Panel lateral (menú de tres líneas) */
+.drawer-scrim{ position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.45); opacity:0; pointer-events:none; transition:opacity .3s ease; }
+.drawer-scrim.open{ opacity:1; pointer-events:auto; }
+.drawer{
+  position:fixed; top:0; bottom:0; left:0; z-index:41;
+  width:min(78vw,300px); padding:34px 20px;
+  display:flex; flex-direction:column; gap:18px;
+  background:#000; color:var(--cream); border-right:4px solid var(--amber);
+  transform:translateX(-100%); visibility:hidden;
+  transition:transform .3s cubic-bezier(.4,0,.2,1), visibility .3s;
+}
+.drawer.open{ transform:none; visibility:visible; }
+.drawer-close{ align-self:flex-end; color:var(--amber); }
+.drawer-user{ font-family:var(--font-display); font-size:18px; word-break:break-word; }
+
+/* Detalle de un módulo */
+.lesson-body{ padding:8px 26px 4px; text-align:left; font-size:14.5px; line-height:1.55; }
+.lesson-body h3{ font-size:16px; margin:16px 0 6px; }
+.lesson-body ul{ list-style:disc; padding-left:20px; display:flex; flex-direction:column; gap:4px; }
+.lesson-body pre{ font-family:var(--font-mono); font-size:13px; background:var(--dark); color:var(--amber); padding:14px; border-radius:var(--radius-sm); overflow-x:auto; }
+.lesson-actions{ display:grid; gap:10px; padding:18px 26px 36px; }
+.btn--ghost{ background:transparent; border:2px solid var(--dark); color:var(--dark); }
+.lesson-done{ text-align:center; font-family:var(--font-display); font-weight:600; padding:6px 0; }
+
+/* ---------- Accesibilidad y responsivo ---------- */
+@media (prefers-reduced-motion: reduce){
+  .screen, .btn, .toast{ transition:none; }
+}
+
+@media (max-width:430px){
+  .authbar h1{ font-size:16px; }
+}
+
+/* ==========================================================
+   Adaptación a pantallas grandes (tablet / PC)
+   ========================================================== */
+@media (min-width:768px){
+
+  .screen{
+    position:static;
+    display:none;
+    transform:none;
+    opacity:1;
+    visibility:visible;
+    overflow-y:visible;
+  }
+  .screen.active{ display:flex; }
+
+  /* Inicio */
+  .topbar{ padding:22px clamp(24px,5vw,64px); }
+
+  .hero{ padding-top:28px; }
+  .hero__content{
+    max-width:640px;
+    margin:0 auto;
+    padding:0 clamp(24px,5vw,64px) 44px;
+  }
+  .hero__title{ font-size:40px; }
+  .hero__subtitle{ font-size:16px; max-width:520px; }
+  .hero__staff{ max-width:640px; margin:0 auto; padding:0 clamp(24px,5vw,64px); }
+
+  .section{ max-width:1120px; margin:0 auto; padding:56px clamp(24px,5vw,64px); }
+  .section h2{ font-size:24px; margin-bottom:22px; }
+
+  .course-list{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .course-card{ flex-direction:column; align-items:flex-start; gap:14px; padding:22px; }
+  .course-card__icon{ width:44px; height:44px; font-size:34px; line-height:44px; }
+
+  .feature-list{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px 24px; }
+
+  .app-footer{ padding:28px clamp(24px,5vw,64px); }
+
+  /* Iniciar sesión / Crear cuenta: tarjeta centrada */
+  .screen--auth.active{
+    min-height:100vh;
+    align-items:center;
+    justify-content:center;
+    background:var(--page-bg);
+    padding:40px 20px;
+  }
+  .auth-card{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:440px;
+    max-height:90vh;
+    overflow-y:auto;
+    background:var(--cream);
+    border-radius:var(--radius-lg);
+    box-shadow:0 30px 60px -25px rgba(0,0,0,.55);
+  }
+}
+
+</style>
+</head>
+<body>
+
+<main class="app-shell" id="appShell">
+
+  <!-- ============ PANTALLA: Inicio ============ -->
+  <section class="screen screen--home active" id="screen-home" aria-label="Pantalla principal">
+
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand__mark" viewBox="0 0 36 32" fill="currentColor" aria-hidden="true">
+          <rect x="0" y="10" width="5" height="12" rx="2.5"/>
+          <rect x="8" y="4" width="5" height="24" rx="2.5"/>
+          <rect x="16" y="0" width="5" height="32" rx="2.5"/>
+          <rect x="24" y="6" width="5" height="20" rx="2.5"/>
+          <rect x="31" y="12" width="5" height="8" rx="2.5"/>
+        </svg>
+        <span class="brand__word">Easy Sinfony</span>
+        <span class="brand__tag">beta</span>
+      </div>
+      <button class="btn btn--amber" type="button" id="authBtn" data-nav="screen-login">Iniciar sesión</button>
+    </header>
+
+    <div class="hero">
+      <div class="hero__content">
+        <h1 class="hero__title">Aprende música a tu ritmo</h1>
+        <p class="hero__subtitle">Cursos guiados de guitarra y ukelele, pensados para avanzar paso a paso, sin presión.</p>
+        <button class="btn btn--amber btn--lg" type="button" data-scroll="cursos">Explorar cursos</button>
+      </div>
+
+      <svg class="hero__staff" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">
+        <g stroke="#FFC120" stroke-opacity=".3" stroke-width="1.4">
+          <line x1="0" y1="10" x2="400" y2="10"/>
+          <line x1="0" y1="20" x2="400" y2="20"/>
+          <line x1="0" y1="30" x2="400" y2="30"/>
+          <line x1="0" y1="40" x2="400" y2="40"/>
+          <line x1="0" y1="50" x2="400" y2="50"/>
+        </g>
+        <g fill="#FF8A3D" fill-opacity=".6">
+          <ellipse cx="90" cy="34" rx="6" ry="4.3" transform="rotate(-18 90 34)"/>
+          <rect x="95.2" y="10" width="1.8" height="24"/>
+        </g>
+        <g fill="#FFC120" fill-opacity=".6">
+          <ellipse cx="220" cy="22" rx="6" ry="4.3" transform="rotate(-18 220 22)"/>
+          <rect x="225.2" y="4" width="1.8" height="18"/>
+        </g>
+        <g fill="#FF8A3D" fill-opacity=".5">
+          <ellipse cx="330" cy="40" rx="5.4" ry="3.9" transform="rotate(-18 330 40)"/>
+          <rect x="334.8" y="18" width="1.6" height="22"/>
+        </g>
+      </svg>
+    </div>
+
+    <section class="section" id="cursos">
+      <h2>Cursos destacados</h2>
+      <div class="course-list">
+        <article class="course-card">
+          <span class="course-card__icon" aria-hidden="true">🎸</span>
+          <div>
+            <h3>Guitarra</h3>
+            <p>Acordes, rasgueo y tus primeras canciones completas.</p>
+          </div>
+        </article>
+        <article class="course-card">
+          <span class="course-card__icon" aria-hidden="true">🪕</span>
+          <div>
+            <h3>Ukelele</h3>
+            <p>Acordes sencillos y canciones para empezar a tocar rápido.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section--features">
+      <h2>Por qué Easy Sinfony</h2>
+      <ul class="feature-list">
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.4 4.4L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div>
+            <strong>Aprende a tu ritmo</strong>
+            <p>Lecciones cortas que se adaptan al tiempo que tengas disponible.</p>
+          </div>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.4 4.4L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div>
+            <strong>Sigue tu progreso</strong>
+            <p>Visualiza qué tanto has avanzado en cada curso e instrumento.</p>
+          </div>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.4 4.4L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div>
+            <strong>Practica con canciones reales</strong>
+            <p>Cada lección se conecta con piezas que sí vas a querer tocar.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="app-footer">
+      <p>Easy Sinfony · Proyecto formativo SENA</p>
+    </footer>
+  </section>
+
+  <!-- ============ PANTALLA: Iniciar sesión ============ -->
+  <section class="screen screen--auth" id="screen-login" aria-label="Iniciar sesión">
+   <div class="auth-card">
+    <header class="authbar">
+      <button class="icon-btn" type="button" data-nav="screen-home" aria-label="Volver a inicio">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1>Iniciar sesión</h1>
+      <span class="authbar__spacer" aria-hidden="true"></span>
+    </header>
+
+    <div class="auth-body">
+      <div class="auth-mark">
+        <svg viewBox="0 0 36 32" fill="currentColor" aria-hidden="true">
+          <rect x="0" y="10" width="5" height="12" rx="2.5"/>
+          <rect x="8" y="4" width="5" height="24" rx="2.5"/>
+          <rect x="16" y="0" width="5" height="32" rx="2.5"/>
+          <rect x="24" y="6" width="5" height="20" rx="2.5"/>
+          <rect x="31" y="12" width="5" height="8" rx="2.5"/>
+        </svg>
+      </div>
+      <p class="auth-lead">Ingresa para seguir tus cursos y tu progreso.</p>
+
+      <form class="auth-form" data-auth="login" novalidate>
+        <label class="field">
+          <span>Correo electrónico</span>
+          <input type="email" name="email" placeholder="tú@correo.com" autocomplete="email" maxlength="120">
+        </label>
+        <label class="field">
+          <span>Contraseña</span>
+          <input type="password" name="password" placeholder="••••••••" autocomplete="current-password">
+        </label>
+        <button class="btn btn--dark btn--lg btn--block" type="submit">Iniciar sesión</button>
+      </form>
+
+      <p class="auth-switch">¿No tienes una cuenta? <a href="#" data-nav="screen-register">Crear una</a></p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ PANTALLA: Crear cuenta ============ -->
+  <section class="screen screen--auth" id="screen-register" aria-label="Crear cuenta">
+   <div class="auth-card">
+    <header class="authbar">
+      <button class="icon-btn" type="button" data-nav="screen-login" aria-label="Volver a iniciar sesión">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1>Crear cuenta</h1>
+      <span class="authbar__spacer" aria-hidden="true"></span>
+    </header>
+
+    <div class="auth-body">
+      <div class="auth-mark">
+        <svg viewBox="0 0 36 32" fill="currentColor" aria-hidden="true">
+          <rect x="0" y="10" width="5" height="12" rx="2.5"/>
+          <rect x="8" y="4" width="5" height="24" rx="2.5"/>
+          <rect x="16" y="0" width="5" height="32" rx="2.5"/>
+          <rect x="24" y="6" width="5" height="20" rx="2.5"/>
+          <rect x="31" y="12" width="5" height="8" rx="2.5"/>
+        </svg>
+      </div>
+      <p class="auth-lead">Crea tu cuenta y empieza tu primera lección hoy.</p>
+
+      <form class="auth-form" data-auth="register" novalidate>
+        <label class="field">
+          <span>Nombre completo</span>
+          <input type="text" name="name" placeholder="Tu nombre y apellido" autocomplete="name" maxlength="120">
+        </label>
+        <label class="field">
+          <span>Correo electrónico</span>
+          <input type="email" name="email" placeholder="tú@correo.com" autocomplete="email" maxlength="120">
+        </label>
+        <label class="field">
+          <span>Contraseña</span>
+          <input type="password" name="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+        </label>
+        <button class="btn btn--dark btn--lg btn--block" type="submit">Crear cuenta</button>
+      </form>
+
+      <p class="auth-switch">¿Ya tienes una cuenta? <a href="#" data-nav="screen-login">Iniciar sesión</a></p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ PANTALLA: Elegir instrumento ============ -->
+  <section class="screen screen--auth" id="screen-instrumento" aria-label="Elegir instrumento">
+   <div class="auth-card">
+    <header class="authbar">
+      <span class="authbar__spacer" aria-hidden="true"></span>
+      <h1>Tu instrumento</h1>
+      <span class="authbar__spacer" aria-hidden="true"></span>
+    </header>
+    <div class="auth-body">
+      <p class="auth-lead">¿Qué instrumento quieres aprender? Lo eliges una sola vez.</p>
+      <div class="instrument-grid" id="instrumentList"></div>
+      <button class="btn btn--dark btn--lg btn--block" type="button" id="instrumentConfirm" disabled>Continuar</button>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ PANTALLA: Módulos ============ -->
+  <section class="screen screen--modulos" id="screen-modulos" aria-label="Mis módulos">
+    <div class="mod-wrap">
+      <header class="mod-top">
+        <button class="menu-btn" type="button" id="menuBtn" aria-label="Abrir menú" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+        </button>
+        <div>
+          <h1 id="modGreeting">Hola</h1>
+          <p id="modInstrument"></p>
+        </div>
+      </header>
+      <div class="slider" id="slider" aria-label="Módulos del curso"></div>
+      <div class="mod-nav">
+        <button class="nav-btn" type="button" id="slidePrev" aria-label="Módulo anterior"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="nav-btn" type="button" id="slideNext" aria-label="Módulo siguiente"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <div class="drawer-scrim" id="drawerScrim"></div>
+    <aside class="drawer" id="drawer" aria-hidden="true">
+      <button class="icon-btn drawer-close" type="button" id="drawerClose" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="drawer-user" id="drawerUser"></p>
+      <button class="btn btn--amber btn--lg btn--block" type="button" data-action="logout">Cerrar sesión</button>
+    </aside>
+  </section>
+
+  <!-- ============ PANTALLA: Detalle del módulo ============ -->
+  <section class="screen screen--auth" id="screen-modulo" aria-label="Módulo">
+   <div class="auth-card">
+    <header class="authbar">
+      <button class="icon-btn" type="button" data-nav="screen-modulos" aria-label="Volver a los módulos">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h1 id="modTitle">Módulo</h1>
+      <span class="authbar__spacer" aria-hidden="true"></span>
+    </header>
+    <div class="lesson-body" id="modBody"></div>
+    <div class="lesson-actions" id="modActions">
+      <button class="btn btn--dark btn--lg btn--block" type="button" id="modCompletar">Completar módulo</button>
+      <button class="btn btn--ghost btn--lg btn--block" type="button" id="modOmitir">Omitir</button>
+    </div>
+   </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</main>
+
+<script>
+/* ==========================================================
+   Easy Sinfony — prototipo front-end conectado a la API
+   - Navegación entre pantallas
+   - Registro e inicio de sesión usando la API de autenticación
+     (Node.js / Express / MySQL / bcrypt)
+   ========================================================== */
+
+/* ---------- CONFIGURACIÓN DE LA API ----------
+   Ajusta estos valores para que coincidan con tu API
+   (los mismos que usaste en Postman). */
+const API_URL = 'http://localhost:3000';
+
+const ENDPOINTS = {
+  register: '/api/auth/registro',   // POST → responde 201
+  login:    '/api/auth/login',      // POST → responde 200
+  instrumentos:      '/api/instrumentos',          // GET  → lista de instrumentos
+  usuarioInstrumento: '/api/usuarios/instrumento'  // GET (?correo=) y PUT
+};
+
+// Nombres de los campos que espera tu API en el cuerpo (JSON)
+const FIELDS = {
+  nombre:     'nombre',
+  apellido:   'apellido',
+  correo:     'correo',
+  contrasena: 'contrasena'
+};
+
+const SESSION_KEY = 'easySinfonySession';
+const MIN_PASSWORD = 6;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const shell   = document.getElementById('appShell');
+  const toast   = document.getElementById('toast');
+  const authBtn = document.getElementById('authBtn');
+  let toastTimer;
+
+  /* ---------- Utilidades de interfaz ---------- */
+  function showScreen(id){
+    const target = document.getElementById(id);
+    if(!target) return;
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.toggle('active', screen === target);
+    });
+    target.scrollTop = 0;
+  }
+
+  function showToast(message, type = 'ok'){
+    toast.textContent = message;
+    toast.classList.toggle('toast--error', type === 'error');
+    toast.classList.add('toast--visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('toast--visible'), type === 'error' ? 3800 : 2200);
+  }
+
+  /* ---------- Sesión (guardada en el navegador) ---------- */
+  function getSession(){
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+    catch { return null; }
+  }
+  function saveSession(session){
+    try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch {}
+  }
+  function clearSession(){
+    try { localStorage.removeItem(SESSION_KEY); } catch {}
+  }
+
+  // El botón de la barra superior cambia según haya sesión o no
+  function renderSession(){
+    const session = getSession();
+    if(session){
+      authBtn.textContent = 'Mis módulos';
+      authBtn.removeAttribute('data-nav');
+      authBtn.dataset.action = 'modulos';
+    } else {
+      authBtn.textContent = 'Iniciar sesión';
+      authBtn.dataset.nav = 'screen-login';
+      delete authBtn.dataset.action;
+    }
+  }
+
+  /* ---------- Comunicación con la API ---------- */
+  const apiPost = (path, body) => apiRequest('POST', path, body);
+
+  async function apiRequest(method, path, body){
+    let response;
+    try {
+      response = await fetch(API_URL + path, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined
+      });
+    } catch {
+      throw new Error('No se pudo conectar con el servidor. Verifica que la API esté encendida.');
+    }
+
+    let data = {};
+    try { data = await response.json(); } catch {}
+
+    if(!response.ok){
+      const apiMessage = data.message || data.mensaje || data.error;
+      const fallback = {
+        400: 'Revisa los datos ingresados.',
+        401: 'Correo o contraseña incorrectos.',
+        404: 'Correo o contraseña incorrectos.',
+        409: 'Ese correo ya está registrado.'
+      }[response.status] || `Error del servidor (${response.status}).`;
+      throw new Error(apiMessage || fallback);
+    }
+    return data;
+  }
+
+  /* ---------- Validaciones del formulario ---------- */
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // "Juan Sebastian Jimenez Satizabal" → nombre: "Juan Sebastian", apellido: "Jimenez Satizabal"
+  function splitFullName(fullName){
+    const words = fullName.trim().split(/\s+/).filter(Boolean);
+    if(words.length < 2) return null;
+    const cut = words.length >= 4 ? Math.floor(words.length / 2) : 1;
+    return {
+      nombre:   words.slice(0, cut).join(' '),
+      apellido: words.slice(cut).join(' ')
+    };
+  }
+
+  /* ---------- Acciones: iniciar sesión y registrarse ---------- */
+  async function handleLogin(form){
+    const email    = form.elements.email.value.trim();
+    const password = form.elements.password.value;
+
+    if(!EMAIL_RE.test(email)) throw new Error('Escribe un correo válido.');
+    if(!password)             throw new Error('Escribe tu contraseña.');
+
+    const data = await apiPost(ENDPOINTS.login, {
+      [FIELDS.correo]: email,
+      [FIELDS.contrasena]: password
+    });
+
+    startSession(data, email);
+    form.reset();
+    showToast('¡Bienvenido, ' + getSession().nombre + '!');
+    await goAfterLogin();
+  }
+
+  async function handleRegister(form){
+    const fullName = form.elements.name.value;
+    const email    = form.elements.email.value.trim();
+    const password = form.elements.password.value;
+
+    const names = splitFullName(fullName);
+    if(!names)                      throw new Error('Escribe tu nombre y apellido.');
+    if(!EMAIL_RE.test(email))       throw new Error('Escribe un correo válido.');
+    if(password.length < MIN_PASSWORD) throw new Error('La contraseña debe tener al menos ' + MIN_PASSWORD + ' caracteres.');
+
+    await apiPost(ENDPOINTS.register, {
+      [FIELDS.nombre]: names.nombre,
+      [FIELDS.apellido]: names.apellido,
+      [FIELDS.correo]: email,
+      [FIELDS.contrasena]: password
+    });
+
+    // Cuenta creada: inicia sesión automáticamente y pide el instrumento
+    try {
+      const data = await apiPost(ENDPOINTS.login, {
+        [FIELDS.correo]: email,
+        [FIELDS.contrasena]: password
+      });
+      startSession(data, email);
+      form.reset();
+      showToast('¡Cuenta creada!');
+      openPicker();
+    } catch {
+      form.reset();
+      showToast('Cuenta creada. Ahora inicia sesión.');
+      showScreen('screen-login');
+    }
+  }
+
+  /* ---------- Sesión y elección de instrumento ---------- */
+  function startSession(data, email){
+    const user = data.usuario || data.user || {};
+    saveSession({
+      token:  data.token || null,
+      nombre: user.nombre || data.nombre || email.split('@')[0],
+      correo: user.correo || email
+    });
+    renderSession();
+  }
+
+  function updateSession(extra){
+    saveSession(Object.assign({}, getSession(), extra));
+  }
+
+  // Si el usuario aún no eligió instrumento, se le muestra la pantalla de elección
+  async function goAfterLogin(){
+    try {
+      const r = await apiRequest('GET', ENDPOINTS.usuarioInstrumento +
+                '?correo=' + encodeURIComponent(getSession().correo));
+      if(r.id_instrumento){
+        updateSession({ id_instrumento: r.id_instrumento, instrumento: r.instrumento });
+        setTimeout(goModules, 900);
+      } else {
+        openPicker();
+      }
+    } catch {
+      setTimeout(goModules, 900);
+    }
+  }
+
+  const ICONS = {
+    guitarra: '<span class="instrument-emoji" aria-hidden="true">🎸</span>',
+    ukelele:  '<span class="instrument-emoji" aria-hidden="true">🪕</span>'
+  };
+  const ICON_DEFAULT = '<span class="instrument-emoji" aria-hidden="true">🎵</span>';
+
+  const instrumentList    = document.getElementById('instrumentList');
+  const instrumentConfirm = document.getElementById('instrumentConfirm');
+  let selectedId = null, selectedName = '';
+
+  async function openPicker(){
+    showScreen('screen-instrumento');
+    selectedId = null;
+    instrumentConfirm.disabled = true;
+    instrumentList.innerHTML = '<p class="auth-lead">Cargando instrumentos...</p>';
+    try {
+      const data = await apiRequest('GET', ENDPOINTS.instrumentos);
+      instrumentList.innerHTML = '';
+      data.instrumentos.forEach((i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'instrument-option';
+        btn.setAttribute('aria-pressed', 'false');
+        btn.dataset.id = i.id_instrumento;
+        btn.innerHTML = (ICONS[i.nombre.toLowerCase()] || ICON_DEFAULT) + '<div><h3></h3><p></p></div>';
+        btn.querySelector('h3').textContent = i.nombre;
+        btn.querySelector('p').textContent  = i.descripcion || '';
+        instrumentList.appendChild(btn);
+      });
+    } catch (error) {
+      instrumentList.innerHTML = '';
+      showToast(error.message, 'error');
+    }
+  }
+
+  instrumentList.addEventListener('click', (event) => {
+    const btn = event.target.closest('.instrument-option');
+    if(!btn) return;
+    instrumentList.querySelectorAll('.instrument-option').forEach((b) => {
+      b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+    });
+    selectedId = Number(btn.dataset.id);
+    selectedName = btn.querySelector('h3').textContent;
+    instrumentConfirm.disabled = false;
+  });
+
+  instrumentConfirm.addEventListener('click', async () => {
+    if(!selectedId) return;
+    instrumentConfirm.disabled = true;
+    try {
+      await apiRequest('PUT', ENDPOINTS.usuarioInstrumento, {
+        correo: getSession().correo,
+        id_instrumento: selectedId
+      });
+      updateSession({ id_instrumento: selectedId, instrumento: selectedName });
+      showToast('¡Listo! Vas a aprender ' + selectedName);
+      setTimeout(goModules, 1100);
+    } catch (error) {
+      showToast(error.message, 'error');
+      instrumentConfirm.disabled = false;
+    }
+  });
+
+  /* ---------- Módulos (pantalla principal tras iniciar sesión) ---------- */
+  const slider = document.getElementById('slider');
+  const drawer = document.getElementById('drawer');
+  const drawerScrim = document.getElementById('drawerScrim');
+  const menuBtn = document.getElementById('menuBtn');
+  let currentModule = null;
+
+  function tablatura(){
+    const uke = (getSession() || {}).instrumento === 'Ukelele';
+    return {
+      cuerdas: uke ? 4 : 6,
+      ejemplo: uke
+        ? 'A|---0---3---|\nE|---0---0---|\nC|---0---0---|\nG|---2---0---|'
+        : 'e|---0---3---|\nB|---1---0---|\nG|---0---0---|\nD|---2---0---|\nA|---3---2---|\nE|---------0-|'
+    };
+  }
+
+  const MODULES = [
+    {
+      id: 'introduccion', titulo: 'Introducción', lecciones: 1,
+      resumen: 'Conoce Easy Sinfony y lo que vas a aprender.',
+      contenido: () =>
+        '<h3>¿Qué es Easy Sinfony?</h3>' +
+        '<p>Es una aplicación para aprender música paso a paso, a tu ritmo y sin presión. Encontrarás lecciones cortas y fáciles de seguir para practicar con tu instrumento desde el primer día.</p>' +
+        '<h3>¿Qué vamos a aprender?</h3>' +
+        '<ul><li>A leer <strong>tablaturas</strong>, la forma más sencilla de leer música para cuerdas.</li>' +
+        '<li>Tus primeros acordes y ritmos.</li><li>Tus primeras canciones completas.</li></ul>' +
+        '<h3>¿Cómo funciona?</h3>' +
+        '<p>Avanzas módulo por módulo: desliza para ver el siguiente. Si ya conoces un tema, puedes omitirlo.</p>'
+    },
+    {
+      id: 'tablaturas', titulo: 'Tablaturas', lecciones: 1,
+      resumen: 'Aprende a leer la música de tu instrumento.',
+      contenido: () => {
+        const t = tablatura();
+        return '<h3>¿Qué es una tablatura?</h3>' +
+          '<p>Es una forma sencilla de leer música para instrumentos de cuerda. En lugar de notas en un pentagrama, muestra una línea por cada cuerda y números que indican en qué traste poner el dedo.</p>' +
+          '<h3>Así se ve</h3><pre>' + t.ejemplo + '</pre>' +
+          '<h3>Cómo leerla</h3><ul>' +
+          '<li>Cada línea es una cuerda: tu instrumento tiene ' + t.cuerdas + '.</li>' +
+          '<li>El número es el traste. El <strong>0</strong> es la cuerda al aire.</li>' +
+          '<li>Se lee de izquierda a derecha.</li></ul>';
+      }
+    }
+  ];
+
+  // Progreso por usuario (se guarda en este navegador por ahora)
+  const progKey = () => 'easySinfonyProgreso:' + ((getSession() || {}).correo || '');
+  function getProg(){
+    try { return JSON.parse(localStorage.getItem(progKey())) || {}; } catch { return {}; }
+  }
+  function setProg(id, estado){
+    const p = getProg(); p[id] = estado;
+    try { localStorage.setItem(progKey(), JSON.stringify(p)); } catch {}
+  }
+
+  function renderModules(){
+    const s = getSession() || {};
+    document.getElementById('modGreeting').textContent = 'Hola, ' + (s.nombre || '');
+    document.getElementById('modInstrument').textContent = s.instrumento ? 'Aprendiendo ' + s.instrumento : 'Tus módulos';
+    document.getElementById('drawerUser').textContent = s.nombre || '';
+    const prog = getProg();
+    slider.innerHTML = '';
+    MODULES.forEach((m) => {
+      const estado = prog[m.id];
+      const card = document.createElement('article');
+      card.className = 'mod-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.dataset.id = m.id;
+      card.innerHTML = '<span class="mod-card__count"></span><h2></h2><p></p><span class="mod-card__status"></span>';
+      card.querySelector('.mod-card__count').textContent = m.lecciones + (m.lecciones === 1 ? ' Lección' : ' Lecciones');
+      card.querySelector('h2').textContent = m.titulo;
+      card.querySelector('p').textContent = m.resumen;
+      const status = card.querySelector('.mod-card__status');
+      if(estado === 'completada'){ status.textContent = '✓ ¡Completado!'; status.classList.add('done'); }
+      else if(estado === 'omitida'){ status.textContent = 'Omitido'; status.classList.add('skipped'); }
+      else { status.textContent = 'Toca para empezar →'; }
+      slider.appendChild(card);
+    });
+    markActive();
+  }
+
+  function goModules(){
+    renderModules();
+    closeDrawer();
+    showScreen('screen-modulos');
+    slider.scrollLeft = 0;
+    markActive();
+  }
+
+  function nearestCard(){
+    const center = slider.getBoundingClientRect().left + slider.clientWidth / 2;
+    let best = null, bestDist = Infinity;
+    slider.querySelectorAll('.mod-card').forEach((c) => {
+      const r = c.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width / 2 - center);
+      if(d < bestDist){ best = c; bestDist = d; }
+    });
+    return best;
+  }
+  function markActive(){
+    const active = nearestCard();
+    slider.querySelectorAll('.mod-card').forEach((c) => c.classList.toggle('is-active', c === active));
+  }
+  slider.addEventListener('scroll', () => requestAnimationFrame(markActive));
+
+  // Arrastrar con el puntero del mouse (en el celular el deslizamiento ya es nativo)
+  let dragging = false, startX = 0, startLeft = 0, moved = 0;
+  slider.addEventListener('pointerdown', (e) => {
+    if(e.pointerType !== 'mouse') return;
+    dragging = true; moved = 0; startX = e.clientX; startLeft = slider.scrollLeft;
+    slider.classList.add('dragging');
+  });
+  window.addEventListener('pointermove', (e) => {
+    if(!dragging) return;
+    const dx = e.clientX - startX;
+    moved = Math.max(moved, Math.abs(dx));
+    slider.scrollLeft = startLeft - dx;
+  });
+  window.addEventListener('pointerup', () => {
+    if(!dragging) return;
+    dragging = false;
+    slider.classList.remove('dragging');
+    const card = nearestCard();
+    if(card) card.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  });
+
+  function moveSlider(direction){
+    const card = slider.querySelector('.mod-card');
+    if(card) slider.scrollBy({ left: direction * (card.offsetWidth + 16), behavior:'smooth' });
+  }
+  document.getElementById('slidePrev').addEventListener('click', () => moveSlider(-1));
+  document.getElementById('slideNext').addEventListener('click', () => moveSlider(1));
+
+  // Abrir un módulo al tocar su tarjeta (si no fue un arrastre)
+  function openFromCard(card){
+    if(moved > 6){ moved = 0; return; }
+    // Si la tarjeta no es la del centro, solo se desliza hacia ella
+    if(card !== nearestCard()){
+      card.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+      return;
+    }
+    const mod = MODULES.find((m) => m.id === card.dataset.id);
+    if(mod) openModule(mod);
+  }
+  slider.addEventListener('click', (e) => {
+    const card = e.target.closest('.mod-card');
+    if(card) openFromCard(card);
+  });
+  slider.addEventListener('keydown', (e) => {
+    const card = e.target.closest('.mod-card');
+    if(card && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); openFromCard(card); }
+  });
+
+  function openModule(mod){
+    currentModule = mod;
+    const estado = getProg()[mod.id];
+    document.getElementById('modTitle').textContent = mod.titulo;
+    document.getElementById('modBody').innerHTML = mod.contenido();
+    const actions = document.getElementById('modActions');
+    if(estado){
+      actions.innerHTML = '<p class="lesson-done">' + (estado === 'completada' ? '✓ ¡Completado!' : 'Módulo omitido') + '</p>';
+    } else {
+      actions.innerHTML = '<button class="btn btn--dark btn--lg btn--block" type="button" data-finish="completada">Completar módulo</button>' +
+                          '<button class="btn btn--ghost btn--lg btn--block" type="button" data-finish="omitida">Omitir</button>';
+    }
+    showScreen('screen-modulo');
+  }
+  document.getElementById('modActions').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-finish]');
+    if(!btn || !currentModule) return;
+    setProg(currentModule.id, btn.dataset.finish);
+    showToast(btn.dataset.finish === 'completada' ? '¡Módulo completado!' : 'Módulo omitido');
+    setTimeout(goModules, 700);
+  });
+
+  // Menú lateral de tres líneas
+  function openDrawer(){
+    drawer.classList.add('open'); drawerScrim.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false'); menuBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeDrawer(){
+    drawer.classList.remove('open'); drawerScrim.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true'); menuBtn.setAttribute('aria-expanded', 'false');
+  }
+  menuBtn.addEventListener('click', openDrawer);
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  drawerScrim.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeDrawer(); });
+
+  /* ---------- Eventos ---------- */
+  // Navegación (botones, flechas de volver, enlaces) y cierre de sesión
+  shell.addEventListener('click', (event) => {
+    const actionEl = event.target.closest('[data-action]');
+    if(actionEl && actionEl.dataset.action === 'logout'){
+      clearSession();
+      renderSession();
+      closeDrawer();
+      showScreen('screen-home');
+      showToast('Sesión cerrada.');
+      return;
+    }
+    if(actionEl && actionEl.dataset.action === 'modulos'){
+      goModules();
+      return;
+    }
+
+    const navEl = event.target.closest('[data-nav]');
+    if(navEl){
+      event.preventDefault();
+      showScreen(navEl.dataset.nav);
+      return;
+    }
+
+    const scrollEl = event.target.closest('[data-scroll]');
+    if(scrollEl){
+      const dest = document.getElementById(scrollEl.dataset.scroll);
+      if(dest) dest.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  });
+
+  // Formularios de inicio de sesión y registro
+  document.querySelectorAll('.auth-form').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button[type="submit"]');
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Enviando...';
+
+      try {
+        if(form.dataset.auth === 'login') await handleLogin(form);
+        else                              await handleRegister(form);
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+  });
+
+  renderSession();
+  const startSessionData = getSession();
+  if(startSessionData){
+    if(startSessionData.id_instrumento) goModules();
+    else goAfterLogin();
+  }
+});
+
+</script>
+</body>
+</html>
