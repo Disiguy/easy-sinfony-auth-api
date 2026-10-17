@@ -657,7 +657,11 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; line-height:1.15; co
 /* ---------- CONFIGURACIÓN DE LA API ----------
    Ajusta estos valores para que coincidan con tu API
    (los mismos que usaste en Postman). */
-const API_URL = 'http://localhost:3000';
+// En tu computador usa la API local; publicada en internet usa la API desplegada en Render.
+const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+const API_URL = IS_LOCAL
+  ? 'http://localhost:3000'
+  : 'https://easy-sinfony-api.onrender.com';   // ← cambia por la URL real de tu API en Render
 
 const ENDPOINTS = {
   register: '/api/auth/registro',   // POST → responde 201

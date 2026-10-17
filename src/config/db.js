@@ -7,6 +7,10 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
+// Aiven exige conexion cifrada (SSL). En tu computador no hace falta:
+// solo se activa si existe la variable DB_SSL=true (se pone en Render).
+const usarSSL = String(process.env.DB_SSL || '').toLowerCase() === 'true';
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 3306,
@@ -15,6 +19,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'easy_sinfony',
   waitForConnections: true,
   connectionLimit: 10,
+  ssl: usarSSL ? { rejectUnauthorized: false } : undefined,
 });
 
 module.exports = pool;
